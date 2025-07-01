@@ -43,6 +43,7 @@ async function checkForShowSignal() {
             const files = await Neutralino.filesystem.readDirectory(".");
             console.log("running main.py");
             const result = await Neutralino.os.execCommand("python ././python_files/main.py");
+            await Neutralino.window.focus();
             console.log("running gemini.py");
             const geminiResult = await Neutralino.os.execCommand("python ././python_files/gemini.py");
             var file_name= geminiResult.stdOut;
