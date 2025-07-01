@@ -1,0 +1,9 @@
+/* Add some breathing room to the body */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Style for individual harmful clause cards */
+.clause-card {
+    border-left: 4px solid #dc3545; /* Red border to indicate danger */
+}

@@ -1,0 +1,21 @@
+# Developer tools' files
+.lite_workspace.lua
+
+# Neutralinojs binaries and builds
+TNC-Analyzer/bin
+TNC-Analyzer/dist
+
+# Neutralinojs client (minified)
+neutralino.js
+
+# Neutralinojs related files
+.storage
+*.log
+
+TNC-Analyzer/python_files/venv
+.env
+hotkey_listener.pid
+hotkey_listener.spec
+./python_files/build
+TNC-Analyzer/python_files/__pycache__
+TNC-Analyzer/python_files/build
