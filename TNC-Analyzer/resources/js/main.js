@@ -131,53 +131,54 @@ async function runCleanup() {
     for (const file of analyzerFiles) {
         await Neutralino.filesystem.remove(file.entry);
     }
+}
 
-    function displayResults(analysis) {
-        resultState.classList.remove("d-none");
+function displayResults(analysis) {
+    resultState.classList.remove("d-none");
 
-        const summaryText = document.getElementById("summary-text");
-        const container = document.getElementById("harmful-clauses-container");
-        const errorContainer = document.getElementById("error-container");
+    const summaryText = document.getElementById("summary-text");
+    const container = document.getElementById("harmful-clauses-container");
+    const errorContainer = document.getElementById("error-container");
 
-        summaryText.textContent = analysis.summary || "No summary provided.";
-        errorContainer.classList.add("d-none");
+    summaryText.textContent = analysis.summary || "No summary provided.";
+    errorContainer.classList.add("d-none");
+    container.innerHTML = "";
+
+    const clauses = Array.isArray(analysis.harmful_clauses) ? analysis.harmful_clauses : [];
+
+    let currentClauses = [...clauses]; // Clone for filtering
+
+    const filterSelect = document.getElementById("severity-filter");
+    const sortSelect = document.getElementById("sort-order");
+
+    function renderFilteredAndSortedClauses() {
+        let filtered = [...currentClauses];
+        const filterVal = filterSelect.value;
+        const sortVal = sortSelect.value;
+
+        if (filterVal !== "all") {
+            filtered = filtered.filter(c => c.severity.toLowerCase() === filterVal);
+        }
+
+        filtered.sort((a, b) => {
+            const sevOrder = { high: 3, medium: 2, low: 1 };
+            return sortVal === "high"
+                ? sevOrder[b.severity] - sevOrder[a.severity]
+                : sevOrder[a.severity] - sevOrder[b.severity];
+        });
+
         container.innerHTML = "";
+        for (const clause of filtered) {
+            const badgeColor = {
+                high: "danger",
+                medium: "warning",
+                low: "success"
+            }[clause.severity?.toLowerCase()] || "secondary";
 
-        const clauses = Array.isArray(analysis.harmful_clauses) ? analysis.harmful_clauses : [];
+            const card = document.createElement("div");
+            card.className = "card mb-3 border-" + badgeColor;
 
-        let currentClauses = [...clauses]; // Clone for filtering
-
-        const filterSelect = document.getElementById("severity-filter");
-        const sortSelect = document.getElementById("sort-order");
-
-        function renderFilteredAndSortedClauses() {
-            let filtered = [...currentClauses];
-            const filterVal = filterSelect.value;
-            const sortVal = sortSelect.value;
-
-            if (filterVal !== "all") {
-                filtered = filtered.filter(c => c.severity.toLowerCase() === filterVal);
-            }
-
-            filtered.sort((a, b) => {
-                const sevOrder = { high: 3, medium: 2, low: 1 };
-                return sortVal === "high"
-                    ? sevOrder[b.severity] - sevOrder[a.severity]
-                    : sevOrder[a.severity] - sevOrder[b.severity];
-            });
-
-            container.innerHTML = "";
-            for (const clause of filtered) {
-                const badgeColor = {
-                    high: "danger",
-                    medium: "warning",
-                    low: "success"
-                }[clause.severity?.toLowerCase()] || "secondary";
-
-                const card = document.createElement("div");
-                card.className = "card mb-3 border-" + badgeColor;
-
-                card.innerHTML = `
+            card.innerHTML = `
                 <div class="card-header bg-${badgeColor} text-white">
                     Severity: ${clause.severity}
                 </div>
@@ -188,19 +189,17 @@ async function runCleanup() {
                     <p class="card-text">${clause.reason}</p>
                 </div>
             `;
-                container.appendChild(card);
-            }
+            container.appendChild(card);
         }
-
-        // Bind dropdown changes
-        filterSelect.onchange = renderFilteredAndSortedClauses;
-        sortSelect.onchange = renderFilteredAndSortedClauses;
-
-        renderFilteredAndSortedClauses();
     }
-    document.getElementById("reset-button").addEventListener("click", () => {
-        resultState.classList.add("d-none");
-        initialState.classList.remove("d-none");
-    });
 
+    // Bind dropdown changes
+    filterSelect.onchange = renderFilteredAndSortedClauses;
+    sortSelect.onchange = renderFilteredAndSortedClauses;
+
+    renderFilteredAndSortedClauses();
 }
+document.getElementById("reset-button").addEventListener("click", () => {
+    resultState.classList.add("d-none");
+    initialState.classList.remove("d-none");
+});

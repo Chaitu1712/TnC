@@ -19,3 +19,4 @@ hotkey_listener.spec
 ./python_files/build
 TNC-Analyzer/python_files/__pycache__
 TNC-Analyzer/python_files/build
+TNC-Analyzer/.tmp
