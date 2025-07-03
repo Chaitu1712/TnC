@@ -19,13 +19,13 @@ function setTray() {
     Neutralino.os.setTray(tray);
 }
 
-function onTrayMenuItemClicked(event) {
+async function onTrayMenuItemClicked(event) {
     switch (event.detail.id) {
         case "SHOW":
             Neutralino.window.show();
             break;
         case "QUIT":
-            stopHotkeyListener(); // Stop listener before exiting
+            await stopHotkeyListener(); // Stop listener before exiting
             Neutralino.app.exit();
             break;
     }
@@ -78,7 +78,8 @@ async function checkForShowSignal() {
 // Start the Python hotkey listener in background
 async function startHotkeyListener() {
     try {
-        await Neutralino.os.execCommand(' start  ././python_files/hotkey_listener.exe', { background: true });
+        const hotkey=await Neutralino.os.execCommand(' start  ././python_files/hotkey_listener.exe', { background: true });
+        console.log("Hotkey listener started.", hotkey);
     } catch (e) {
         console.error("Failed to start hotkey listener:", e);
     }
@@ -86,23 +87,31 @@ async function startHotkeyListener() {
 
 // Stop the Python hotkey listener process
 async function stopHotkeyListener() {
-    const files = await Neutralino.filesystem.readDirectory("././python_files");
-    const hasPid = files.some(f => f.entry === "hotkey_listener.pid");
     try {
-        if (hasPid) {
-            const pidContent = await Neutralino.filesystem.readFile("././python_files/hotkey_listener.pid");
-            const pid = parseInt(pidContent);
-            if (!isNaN(pid)) {
-                await Neutralino.os.execCommand(`kill ${pid}`);
-            } else {
-                console.warn("Invalid PID in hotkey_listener.pid file.");
-            }
-        } else {
-            console.warn("No hotkey_listener.pid file found. Cannot stop listener.");
+        const pidPath = "././python_files/hotkey_listener.pid";
+        const files = await Neutralino.filesystem.readDirectory("././python_files");
+        const hasPid = files.some(f => f.entry === "hotkey_listener.pid");
+
+        if (!hasPid) {
+            console.warn("⚠️ No hotkey_listener.pid file found.");
+            return;
         }
-        console.log("Hotkey listener stopped.");
+
+        const pidContent = await Neutralino.filesystem.readFile(pidPath);
+        const pid = parseInt(pidContent.trim(), 10);
+
+        if (isNaN(pid)) {
+            console.warn("⚠️ Invalid PID in file:", pidContent);
+            return;
+        }
+
+        console.log("🛑 Killing listener with PID:", pid);
+        await Neutralino.os.execCommand(`taskkill /PID ${pid} /F`);
+
+        await Neutralino.filesystem.remove(pidPath);
+        console.log("✅ Listener process terminated and pid file removed.");
     } catch (e) {
-        console.error("Failed to stop hotkey listener:", e);
+        console.error("❌ Failed to stop hotkey listener:", e);
     }
 }
 
