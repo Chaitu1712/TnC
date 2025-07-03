@@ -1,105 +1,151 @@
 # 📜 T&C Analyzer – Lightweight Desktop AI for Terms & Conditions
 
-**T&C Analyzer** is a lightweight Windows desktop app that monitors your screen for Terms & Conditions and summarizes them using **AI** — all triggered with a global hotkey.
-
-This is perfect for quickly understanding what you're agreeing to when installing apps, signing up for services, or navigating tricky popups.
+**T&C Analyzer** is a privacy-focused Windows desktop app that reads and summarizes Terms & Conditions using **AI**, triggered via a global hotkey. Stay informed before you agree — without reading pages of legalese.
 
 ---
 
 ## 🚀 Features
 
-✅ Extracts on-screen Terms & Conditions using Windows Accessibility API  
-✅ Launches silently to tray and listens in the background  
-✅ Triggered via `Ctrl + Alt + Shift + T` hotkey  
-✅ Summarizes and flags **harmful clauses** using **Gemini 2.5 Flash**  
-✅ Built with modern lightweight tools: Neutralino.js + Python + PyInstaller
+✅ Extracts T&C text from any focused app using Windows Accessibility API  
+✅ AI-powered summary with Gemini 2.5 Flash  
+✅ Flags potentially **harmful clauses** (with severity: high, medium, low)  
+✅ Always-on tray app with **global hotkey** trigger: `Ctrl + Alt + Shift + T`  
+✅ Built for speed: small, silent, and resource-light  
+✅ Fully self-contained `.exe` build using Neutralino.js + Python
 
 ---
 
 ## 🧱 Tech Stack
 
-| Layer         | Tool / Tech              | Notes                                             |
-|--------------|---------------------------|--------------------------------------------------|
-| Shell        | [Neutralino.js](https://neutralino.js.org/) | Minimal native wrapper around HTML + JS          |
-| Backend      | Python 3.12               | Handles accessibility, extraction, and Gemini AI |
-| AI API       | Gemini 2.5 Flash          | Summarizes and flags clauses                     |
-| Hotkey       | PyInstaller `.exe`        | Global hotkey listener compiled from Python      |
+| Layer         | Tool / Tech                  | Notes                                             |
+|---------------|------------------------------|--------------------------------------------------|
+| Shell         | [Neutralino.js](https://neutralino.js.org/) | Lightweight native shell for HTML + JS          |
+| Backend       | Python 3.12                  | Handles UI Automation + Gemini calls             |
+| AI API        | Gemini 2.5 Flash             | Summarizes and flags clauses                     |
+| Hotkey        | PyInstaller `.exe`           | Global hotkey listener (compiled Python)         |
+| Packaging     | `neu build --release`        | Finalizes app for distribution                   |
 
 ---
 
 ## 🛠️ Installation & Setup
 
-### ⚙️ 1. Clone the repo
+### 1. Clone the repo
 ```bash
 git clone https://github.com/your-username/TnC-Analyzer.git
 cd TnC-Analyzer
 ```
-### 📦 2. Install Python dependencies
+
+### 2. Install Python dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 💡 3. Install Neutralino.js globally
+### 3. Install Neutralino.js
 ```bash
 npm install -g @neutralinojs/neu
 ```
 
-### 🧪 4. Run the app (development mode)
-``` bash
-neu run
-```
-
-### 🚀 5. Trigger the analyzer
-Press: Ctrl + Alt + Shift + T
-🧠 It will extract the visible T&C and analyze it.
-
----
-## 🔐 Environment Variables
-Create a .env file in the project root with your Gemini API key:
-```bash
+### 4. Add your Gemini API key
+Create a `.env` file:
+```env
 GEMINI_API_KEY=your_api_key_here
 ```
 
 ---
-## 🔁 Build Hotkey Listener
-To compile the hotkey listener as a .exe:
+
+## ▶️ Run in Development Mode
+
+```bash
+neu run
+```
+
+Then press:
+```plaintext
+Ctrl + Alt + Shift + T
+```
+
+🧠 The app extracts text from the active window and sends it to Gemini for analysis. The results (summary + harmful clauses) appear in the app UI.
+
+---
+
+## 🔐 Hotkey Listener – Compilation
+
+You must compile the hotkey listener into an invisible `.exe`:
 
 ```bash
 pyinstaller --onefile --noconsole python_files/hotkey_listener.py
 ```
-It will output hotkey_listener.exe in /dist/, which should be moved into python_files/.
+
+- Output: `dist/hotkey_listener.exe`
+- Move to: `python_files/hotkey_listener.exe`
+- The listener writes its own `.pid` file so it can be terminated cleanly.
 
 ---
-## 📚 Roadmap
-[x] Accessibility-based extraction of T&Cs
 
-[x] Global hotkey trigger via background process
+## 🧱 Build the Final Windows App
 
-[x] Gemini AI integration (summary + harmful clauses)
+Run this from the root:
 
- Parse and render analysis in the UI
+```bash
+neu build --release
+```
 
- Scroll-capture fallback (OCR)
+This creates a distributable app inside `dist/` with:
 
- Chrome Extension (future phase)
+- `TNC-Analyzer.exe`
+- Packaged JS/HTML/CSS and resources
+
+Then 
+- Copy Your `python_files/` (including `.exe`, `.py`, and scripts) into dist/TNC_Analyzer folder
+📁 Inside `neutralino.config.json`, ensure you have:
+
+```json
+"include": [
+  "python_files/**",
+  "resources/**",
+  "js/**",
+  "index.html",
+  "styles.css"
+]
+```
+---
+
+## 🔁 Roadmap
+
+- [x] Accessibility-based text extraction
+- [x] Global hotkey trigger
+- [x] Gemini API analysis
+- [x] Dynamic JSON UI rendering (Bootstrap)
+- [x] Sort & filter clauses by severity
+- [x] Runtime `.pid` management for listener control
+- [ ] OCR fallback for scrollable/non-accessible views
+- [ ] Chrome Extension version
 
 ---
+
 ## 🤝 Contributing
 
-Pull requests are welcome — especially around:
+Pull requests are welcome!
 
-- Better clause detection
-- Frontend rendering
-- Cross-platform compatibility (macOS/Linux)
+We're especially looking for help with:
+- Improving clause extraction fidelity
+- Supporting macOS/Linux (currently Windows-only)
+- UI improvements, dark mode, animations
 
 ---
+
 ## 🧑‍💻 License
 
 MIT License
 
-* * *
+---
 
 ## ✨ Credits
 
-Built by Chaitanya Pandey 
-Powered by Google Gemini, Neutralino.js, and Python.
+Created by [Chaitanya Pandey](https://github.com/your-username)  
+Powered by:
+- [Google Gemini API](https://ai.google.dev/)
+- [Neutralino.js](https://neutralino.js.org/)
+- [Python](https://www.python.org/)
+
+---
