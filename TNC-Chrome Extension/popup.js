@@ -88,13 +88,10 @@ function analyze(action) {
             }
 
             try {
-              console.log("📦 Raw Gemini Response:", res.result);
               const cleaned = res.result.trim().replace(/^```json\s*/, "").replace(/```$/, "");
               const parsed = JSON.parse(cleaned);
               renderResults(parsed);
             } catch (e) {
-              console.error("❌ JSON parsing error:", e);
-              console.log("📦 Raw (unparsed) response:", res.result);
               errorBox.textContent = "⚠️ Could not parse Gemini response.";
               errorBox.classList.remove("d-none");
             }
