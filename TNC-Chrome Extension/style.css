@@ -1,0 +1,28 @@
+body {
+    width: 600px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 1rem;
+    font-family: system-ui, sans-serif;
+}
+
+button {
+    width: 100%;
+}
+
+.card-text em {
+    color: #333;
+}
+
+.card {
+    font-size: 0.95rem;
+}
+
+#summary-box {
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+#clauses-container .card {
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+}
