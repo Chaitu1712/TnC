@@ -199,7 +199,7 @@ MIT License
 
 ## ✨ Credits
 
-Created by [Chaitanya Pandey](https://github.com/your-username)
+Created by [Chaitanya Pandey](https://github.com/Chaitu1712)
 
 Powered by:
 - [Gemini by Google](https://ai.google.dev/)
